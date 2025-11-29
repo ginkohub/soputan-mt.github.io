@@ -14,11 +14,38 @@ window.addEventListener('scroll', function() {
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
 });
 
-// --- Dynamic Gallery Logic ---
+// --- Dynamic Gallery Logic & Theme Switching ---
 document.addEventListener('DOMContentLoaded', () => {
     const galleryContainer = document.getElementById('gallery-container');
+    const themeToggle = document.getElementById('theme-toggle');
 
-    // Hanya jalankan jika container galeri ada di halaman ini
+    // Theme switcher logic
+    const updateThemeButton = () => {
+        if (document.body.classList.contains('dark-mode')) {
+            themeToggle.textContent = 'Aktifkan Mode Terang';
+        } else {
+            themeToggle.textContent = 'Aktifkan Mode Gelap';
+        }
+    };
+
+    // Apply saved theme on page load
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme) {
+        document.body.classList.add(currentTheme);
+    }
+    updateThemeButton();
+
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        let theme = '';
+        if (document.body.classList.contains('dark-mode')) {
+            theme = 'dark-mode';
+        }
+        localStorage.setItem('theme', theme);
+        updateThemeButton();
+    });
+
+    // Dynamic gallery logic
     if (galleryContainer) {
         fetch('gallery.json')
             .then(response => response.json())
@@ -41,21 +68,4 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error('Gagal memuat data galeri:', error));
     }
-
-    // --- Theme Switching Logic ---
-    const themeToggle = document.getElementById('theme-toggle');
-    const currentTheme = localStorage.getItem('theme');
-
-    if (currentTheme) {
-        document.body.classList.add(currentTheme);
-    }
-
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        let theme = '';
-        if (document.body.classList.contains('dark-mode')) {
-            theme = 'dark-mode';
-        }
-        localStorage.setItem('theme', theme);
-    });
 });
